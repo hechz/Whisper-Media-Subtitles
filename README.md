@@ -1,5 +1,5 @@
 NAME
-    C:\Users\mars\Dropbox\Whisper-Media-Subtitles\Start-DockerWhisperTranslation.ps1
+Whisper-Media-Subtitles\Start-DockerWhisperTranslation.ps1
 
 SYNOPSIS
     A PowerShell wrapper for use with Docker for Windows to Launch whisper-gpu:latest against a media file and perform a translation or transcription of the media
