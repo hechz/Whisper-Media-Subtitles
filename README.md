@@ -5,7 +5,7 @@
 A PowerShell wrapper for use with Docker for Windows to launch `whisper-gpu:latest` against a media file and perform a translation or transcription of the media.
 
 ### SYNTAX
-`C:\Users\mars\Dropbox\Whisper-Media-Subtitles\Start-DockerWhisperTranslation.ps1 [-mediaTitle] <Object> [[-mediaBase] <Object>] [[-subfolderPattern] <Object>] [[-model] <Object>] [[-task] <Object>] [[-CPUs] <Object>] [[-GPU] <Object>] [[-whisperOptions] <Object>] [-Language] <Object> [<CommonParameters>]`
+`Whisper-Media-Subtitles\Start-DockerWhisperTranslation.ps1 [-mediaTitle] <Object> [[-mediaBase] <Object>] [[-subfolderPattern] <Object>] [[-model] <Object>] [[-task] <Object>] [[-CPUs] <Object>] [[-GPU] <Object>] [[-whisperOptions] <Object>] [-Language] <Object> [<CommonParameters>]`
 
 ### DESCRIPTION
 This script launches a locally built image of whisper, using the local system's GPU for processing. It presumes that the image has been built using "docker-compose build." Options are passed as environment variables to "docker run" and are parsed from my preferred defaults.
