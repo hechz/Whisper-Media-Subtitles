@@ -1,0 +1,31 @@
+version: "3.9"
+
+services:
+  whisper:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: whisper-dsm:latest
+
+    # Optional: Pass environment variables for threading performance
+    environment:
+      - OMP_NUM_THREADS=4
+      - MKL_NUM_THREADS=4
+      - MODEL='base'
+      - OUTPUT_FORMAT='srt'
+      - SOURCE_LANG='en'
+      - TASK='[transcribe|translate]'
+      - FILE='[enter_file_name]'
+      - WHISPER_OPTS='[enter_whisper_cli_options]'
+
+
+
+    # Optional: volume to persist or access files
+    # volumes:
+    #   - ./audio:/app/audio
+
+    # Default command (from Dockerfile ENTRYPOINT)
+    entrypoint: ["/entrypoint.sh"]
+
+    # Optional: run whisper with default or overridden args
+    # command: ["--model", "base", "audio/input.wav"]

@@ -1,0 +1,23 @@
+version: "3.9"
+
+services:
+  whisper:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: whisper:latest
+
+    # Optional: Pass environment variables for threading performance
+    environment:
+      - OMP_NUM_THREADS=8
+      - MKL_NUM_THREADS=8
+
+    # Optional: volume to persist or access files
+    # volumes:
+    #   - ./audio:/app/audio
+
+    # Default command (from Dockerfile ENTRYPOINT)
+    entrypoint: ["whisper"]
+
+    # Optional: run whisper with default or overridden args
+    # command: ["--model", "base", "audio/input.wav"]

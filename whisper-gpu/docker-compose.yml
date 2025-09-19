@@ -1,0 +1,47 @@
+services:
+  whisper:
+    # --- Build the image from the existing Dockerfile ------------------------
+    build:
+      context: .         # path to the directory containing the Dockerfile
+      dockerfile: Dockerfile
+      # You can set a custom tag if you like:
+      # tags:
+      #   - whisper:latest
+    image: whisper-gpu:latest
+
+    # --- Runtime settings ----------------------------------------------------
+    # Run the container with GPU access (Docker ≥ 19.03 + NVIDIA Container Toolkit)
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all          # expose all GPUs
+      - OMP_NUM_THREADS=16
+      - MKL_NUM_THREADS=16
+      - MODEL='base'
+      - OUTPUT_FORMAT='srt'
+      - SOURCE_LANG='en'
+      - TASK='[transcribe|translate]'
+      - FILE='[enter_file_name]'
+      - SMB=0
+      - SMB_USERNAME=''
+      - SMB_PASSWORD=''
+      - SMB_SERVER=''
+      - SMB_PATH=''
+    devices:
+    - /dev/fuse
+
+    deploy:                                 # works in Compose and Swarm
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+    # If you want the same default behaviour as the Dockerfile’s ENTRYPOINT:
+    entrypoint: ["/entrypoint.sh"]
+
+    # Optional: map a host folder for input/output audio/text files
+    # volumes:
+    #   - ./audio:/app/audio
+
+    # Optional: run Whisper with your own arguments at start-up
+    # command: ["--model", "large-v3", "--language", "English", "audio/clip.mp3"]
