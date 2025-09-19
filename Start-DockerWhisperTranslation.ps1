@@ -113,7 +113,7 @@ None
 Standar out put from docker, shows a timestamp when the container starts, the whisper command-line, then the text of the transcription/translation followed by the renaming of the SRT file to a new name including the language.
 
 .LINK
-
+https://github.com/hechz/Whisper-Media-Subtitles
 
 #>
 
