@@ -2,16 +2,16 @@
 .SYNOPSIS
 A PowerShell wrapper for use with Docker for Windows to Launch whisper-gpu:latest against a media file and perform a translation or transcription of the media
 
-.PARAMETER mediaTitle 
+.PARAMETER mediaTitle <String>
 A double quoted string of the path to the media file such as "The Daily Show" for that series, or "Aliens (1986)" for that film.
-.PARAMETER mediaBase
+.PARAMETER mediaBase <String>
 The double quoted drive letter and folder name where media is stored. The default value is "v:\tv", but may be edited to your preffered default, or passed as the parameter
-.PARAMETER subfolderPattern
+.PARAMETER subfolderPattern <FileGlob>
 The first-level folder pattern under the mediaBase, it defaults to "S*\*.*", this may be edited, or passed as a parameter. For films set the value to empty, such as for "Aliens (1986)", the paramter would be set to ''
 .PARAMETER Language
 Select the source media language, this is a selectable list from ValidateSet, and passed to whisper as this parameter:
 --language {af,am,ar,as,az,ba,be,bg,bn,bo,br,bs,ca,cs,cy,da,de,el,en,es,et,eu,fa,fi,fo,fr,gl,gu,ha,haw,he,hi,hr,ht,hu,hy,id,is,it,ja,jw,ka,kk,km,kn,ko,la,lb,ln,lo,lt,lv,mg,mi,mk,ml,mn,mr,ms,mt,my,ne,nl,nn,no,oc,pa,pl,ps,pt,ro,ru,sa,sd,si,sk,sl,sn,so,sq,sr,su,sv,sw,ta,te,tg,th,tk,tl,tr,tt,uk,ur,uz,vi,yi,yo,yue,zh,Afrikaans,Albanian,Amharic,Arabic,Armenian,Assamese,Azerbaijani,Bashkir,Basque,Belarusian,Bengali,Bosnian,Breton,Bulgarian,Burmese,Cantonese,Castilian,Catalan,Chinese,Croatian,Czech,Danish,Dutch,English,Estonian,Faroese,Finnish,Flemish,French,Galician,Georgian,German,Greek,Gujarati,Haitian,Haitian Creole,Hausa,Hawaiian,Hebrew,Hindi,Hungarian,Icelandic,Indonesian,Italian,Japanese,Javanese,Kannada,Kazakh,Khmer,Korean,Lao,Latin,Latvian,Letzeburgesch,Lingala,Lithuanian,Luxembourgish,Macedonian,Malagasy,Malay,Malayalam,Maltese,Mandarin,Maori,Marathi,Moldavian,Moldovan,Mongolian,Myanmar,Nepali,Norwegian,Nynorsk,Occitan,Panjabi,Pashto,Persian,Polish,Portuguese,Punjabi,Pushto,Romanian,Russian,Sanskrit,Serbian,Shona,Sindhi,Sinhala,Sinhalese,Slovak,Slovenian,Somali,Spanish,Sundanese,Swahili,Swedish,Tagalog,Tajik,Tamil,Tatar,Telugu,Thai,Tibetan,Turkish,Turkmen,Ukrainian,Urdu,Uzbek,Valencian,Vietnamese,Welsh,Yiddish,Yoruba}
-.PARAMETER model
+.PARAMETER model <String>
 The whisper model to use, defaults to "small", but may be selected from the list of supported models:
 - tiny
 - base
@@ -19,7 +19,7 @@ The whisper model to use, defaults to "small", but may be selected from the list
 - medium
 - large
 - turbo
-.PARAMETER task
+.PARAMETER task 
 Select the action to perform, translate or transcribe. Transcribe works from any of the available languages, but translate can only translate to English. This is a limitation of whisper.
 .PARAMETER CPUs
 The number of CPUs to assign to Docker, and the number of threads assigned to whisper, defaults to 4
@@ -354,7 +354,7 @@ Param(
 )
 
 $showFiles=Get-ChildItem -ea SilentlyContinue "$mediaBase\$mediaTitle\$subfolderPattern"
-$videoFiles = $showFiles | Where-Object -Property Name -match '\.avi$|\.mkv$|\.mp4$'
+$videoFiles = $showFiles | Where-Object -Property Name -match '\.avi$|\.mkv$|\.mp4$|\.vob$'
 if ( -not $videoFiles ){
 	Write-Warning "No files of type mp4, mkv, or avi found for '$mediaBase\${mediaTitle}\$subFolderPattern'"
 	return
