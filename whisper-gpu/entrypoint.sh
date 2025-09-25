@@ -42,6 +42,6 @@ else
     ls -l /app/ 1>&2
     mount 1>&2 
     sleep 300
-    return 1
+    exit 1
 fi
 date
