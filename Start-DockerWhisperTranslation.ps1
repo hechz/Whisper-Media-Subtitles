@@ -354,7 +354,7 @@ Param(
 )
 
 $showFiles=Get-ChildItem -ea SilentlyContinue "$mediaBase\$mediaTitle\$subfolderPattern"
-$videoFiles = $showFiles | Where-Object -Property Name -match '\.avi$|\.mkv$|\.mp4$|\.vob$'
+$videoFiles = $showFiles | Where-Object -Property Name -match '\.avi$|\.mkv$|\.mp4$|\.vob$|\.ts$'
 if ( -not $videoFiles ){
 	Write-Warning "No files of type mp4, mkv, or avi found for '$mediaBase\${mediaTitle}\$subFolderPattern'"
 	return

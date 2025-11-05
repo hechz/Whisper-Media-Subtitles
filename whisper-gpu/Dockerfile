@@ -1,5 +1,4 @@
-FROM ubuntu:24.04
-FROM nvidia/cuda:12.9.0-runtime-ubuntu24.04
+FROM nvidia/cuda:13.0.1-runtime-ubuntu24.04
 
 # Install ffmpeg and build tools
 RUN apt-get update && apt-get upgrade -y && apt-get install -y \
@@ -27,13 +26,13 @@ RUN apt autoremove -y
 WORKDIR /app
 
 #Install nVidia Utils
-RUN apt-get update && apt-get install -y nvidia-utils-525
+RUN apt-get update && apt-get install -y nvidia-utils-580 nvidia-cuda-toolkit
 
 # Set python3 as default python
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 1
 
 # Install PyTorch with CUDA support (for GPU)
-RUN pip3 install --break-system-packages torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124
+RUN pip3 install --break-system-packages torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu130
 RUN pip3 install --break-system-packages git+https://github.com/openai/whisper.git
 
 # Copy the entrypoint script into the container
@@ -41,7 +40,7 @@ COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 # Optional: Download English model in advance
-RUN whisper --model large-v3 --language English --output_format txt --help || true
+RUN whisper --model base --language English --output_format txt --help || true
 
 # Set default command
 ENTRYPOINT ["/entrypoint.sh"]

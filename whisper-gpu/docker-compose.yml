@@ -13,18 +13,18 @@ services:
     # Run the container with GPU access (Docker ≥ 19.03 + NVIDIA Container Toolkit)
     environment:
       - NVIDIA_VISIBLE_DEVICES=all          # expose all GPUs
-      - OMP_NUM_THREADS=16
-      - MKL_NUM_THREADS=16
-      - MODEL='base'
-      - OUTPUT_FORMAT='srt'
-      - SOURCE_LANG='en'
-      - TASK='[transcribe|translate]'
-      - FILE='[enter_file_name]'
-      - SMB=0
-      - SMB_USERNAME=''
-      - SMB_PASSWORD=''
-      - SMB_SERVER=''
-      - SMB_PATH=''
+      - OMP_NUM_THREADS=${OMP_NUM_THREADS:-16}
+      - MKL_NUM_THREADS=${MKL_NUM_THREADS:-16}
+      - MODEL=${MODEL:-base}
+      - OUTPUT_FORMAT=${OUTPUT_FORMAT:-srt}
+      - SOURCE_LANG=${SOURCE_LANG:-en}
+      - TASK=${TASK:-transcribe}
+      - FILE=${FILE}
+      - SMB=${SMB:-0}
+      - SMB_USERNAME=${SMB_USERNAME:-}
+      - SMB_PASSWORD=${SMB_PASSWORD:-}
+      - SMB_SERVER=${SMB_SERVER:-}
+      - SMB_PATH=${SMB_PATH:-}
     devices:
     - /dev/fuse
 
