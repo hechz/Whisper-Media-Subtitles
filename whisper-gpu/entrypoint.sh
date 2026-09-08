@@ -15,9 +15,14 @@ SMB_SERVER="${SMB_SERVER}"
 SMB_PATH="${SMB_PATH}"
 WHISPER_OPTS="${WHISPER_OPTS}"
 date
-echo "Updating packages silently."
-apt-get update > /dev/null  2>&1
-apt-get upgrade -y > /dev/null  2>&1 
+
+# Fail loudly instead of silently falling back to CPU (large on 2 cores is ~20x realtime)
+if ! python3 -c "import torch,sys; sys.exit(0 if torch.cuda.is_available() else 1)"; then
+    echo "ERROR: CUDA not visible inside container - refusing to run on CPU." >&2
+    echo "       Check 'docker run --gpus', nvidia-container-toolkit, and host driver." >&2
+    [ "${ALLOW_CPU:-0}" = "1" ] || exit 1
+    echo "       ALLOW_CPU=1 set, continuing on CPU anyway." >&2
+fi
 
 if [ ${SMB} -eq 1 ]; then
 	mkdir /app
@@ -29,8 +34,8 @@ echo "Starting: ${TASK} on file: /app${FILE}"
 outPath=$(dirname "/app${FILE}")
 fileTest=$(ls -l "/app${FILE}")
 if [ -n "${fileTest}" ];then
-    echo whisper  "/app${FILE}" --model ${MODEL} --language ${SOURCE_LANG} --output_format ${OUTPUT_FORMAT} --output_dir  "${outPath}" --task ${TASK}  --fp16 False --threads ${OMP_NUM_THREADS} ${WHISPER_OPTS}
-    whisper  "/app${FILE}" --model ${MODEL} --language ${SOURCE_LANG} --output_format ${OUTPUT_FORMAT} --output_dir  "${outPath}" --task ${TASK}  --fp16 False --threads ${OMP_NUM_THREADS} ${WHISPER_OPTS}
+    echo  -ne "whisper  \x22/app${FILE}\x22 --model ${MODEL} --language ${SOURCE_LANG} --output_format ${OUTPUT_FORMAT} --output_dir  \x22${outPath}\x22 --task ${TASK} --threads ${OMP_NUM_THREADS} ${WHISPER_OPTS}\n\n\n\n" 1>&2 
+    whisper  "/app${FILE}" --model ${MODEL} --language ${SOURCE_LANG} --output_format ${OUTPUT_FORMAT} --output_dir  "${outPath}" --task ${TASK} --threads ${OMP_NUM_THREADS} ${WHISPER_OPTS}
     #Rename output file to contain language
     SRT_FILE_SOURCE="$(echo  ${FILE%%.*}.srt )"
     SRT_FILE_DEST="$(echo ${FILE%%.*}.$SOURCE_LANG.srt )"

@@ -354,7 +354,7 @@ Param(
 )
 
 $showFiles=Get-ChildItem -ea SilentlyContinue "$mediaBase\$mediaTitle\$subfolderPattern"
-$videoFiles = $showFiles | Where-Object -Property Name -match '\.avi$|\.mkv$|\.mp4$|\.vob$|\.ts$'
+$videoFiles = $showFiles | Where-Object -Property Name -match '\.avi$|\.mkv$|\.mp4$|\.vob$|\.ts$|\.iso$'
 if ( -not $videoFiles ){
 	Write-Warning "No files of type mp4, mkv, or avi found for '$mediaBase\${mediaTitle}\$subFolderPattern'"
 	return
@@ -375,6 +375,7 @@ $processingArguments | ForEach-Object {
 		return
 	}else{
 		Write-Host "Starting translation on '/app${fn}' to '$srt' with container '$cn'";
-		Start-Process -FilePath  C:\programs\Docker\Docker\resources\bin\docker.exe -ArgumentList "run --rm --gpus device=$GPU --cpus $cpus --hostname whisper-$guid -t --mount source=nas-video,target=/app  -eSMB=0 -eFILE=`"$fn`" -eMODEL=$model -eSOURCE_LANG=$Language -eTASK=$task -eOMP_NUM_THREADS=$cpus --name=`"$cn`" -eWHISPER_OPTS=`"$whisperOptions`" whisper-gpu:latest" -NoNewWindow -Wait
+		Write-verbose "C:\programs\Docker\Docker\resources\bin\docker.exe run --rm --gpus device=$GPU --cpus $cpus --hostname whisper-$guid -t --mount source=nas-video,target=/app --mount source=whisper-models,target=/root/.cache/whisper  -eSMB=0 -eFILE=`"$fn`" -eMODEL=$model -eSOURCE_LANG=$Language -eTASK=$task -eOMP_NUM_THREADS=$cpus --name=`"$cn`" -eWHISPER_OPTS=`"$whisperOptions`" whisper-gpu:latest"
+		Start-Process -FilePath  C:\programs\Docker\Docker\resources\bin\docker.exe -ArgumentList "run --rm --gpus device=$GPU --cpus $cpus --hostname whisper-$guid -t --mount source=nas-video,target=/app --mount source=whisper-models,target=/root/.cache/whisper  -eSMB=0 -eFILE=`"$fn`" -eMODEL=$model -eSOURCE_LANG=$Language -eTASK=$task -eOMP_NUM_THREADS=$cpus --name=`"$cn`" -eWHISPER_OPTS=`"$whisperOptions`" whisper-gpu:latest" -NoNewWindow -Wait 
 	}
 }
