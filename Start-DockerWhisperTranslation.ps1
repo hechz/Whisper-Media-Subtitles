@@ -353,7 +353,7 @@ Param(
 	)] $Language
 )
 
-$showFiles=Get-ChildItem -ea SilentlyContinue "$mediaBase\$mediaTitle\$subfolderPattern"
+$showFiles=Get-ChildItem -ea SilentlyContinue "$mediaBase\$mediaTitle\$subfolderPattern" | Sort-Object -Property LastWriteTime
 $videoFiles = $showFiles | Where-Object -Property Name -match '\.avi$|\.mkv$|\.mp4$|\.vob$|\.ts$|\.iso$'
 if ( -not $videoFiles ){
 	Write-Warning "No files of type mp4, mkv, or avi found for '$mediaBase\${mediaTitle}\$subFolderPattern'"
