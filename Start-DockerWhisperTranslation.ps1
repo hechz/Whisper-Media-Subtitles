@@ -352,11 +352,35 @@ Param(
 		'Yoruba'
 	)] $Language
 )
+function Update-WindowsTitle {
+<#
+     .SYNOPSIS
+     Updates the title of the current PowerShell window.
 
-$showFiles=Get-ChildItem -ea SilentlyContinue "$mediaBase\$mediaTitle\$subfolderPattern" | Sort-Object -Property LastWriteTime
+     .DESCRIPTION
+     Sets the window title for the current PowerShell session to the specified string.
+
+     .PARAMETER Title
+     The string to set as the window title.
+
+     .EXAMPLE
+     Update-WindowsTitle -Title "My Custom Title"
+     Changes the PowerShell window title to "My Custom Title".
+
+     .NOTES
+     Author: matthew.sherian
+     Date: 12/03/2026
+     #>
+     [CmdletBinding()]
+     param(
+          [parameter(Mandatory = $true)] $Title
+     )
+     $host.ui.RawUI.WindowTitle = "$title"
+}
+$showFiles=Get-ChildItem -File -ea SilentlyContinue "$mediaBase\$mediaTitle\$subfolderPattern" | Sort-Object -Property LastWriteTime
 $videoFiles = $showFiles | Where-Object -Property Name -match '\.avi$|\.mkv$|\.mp4$|\.vob$|\.ts$|\.iso$'
 if ( -not $videoFiles ){
-	Write-Warning "No files of type mp4, mkv, or avi found for '$mediaBase\${mediaTitle}\$subFolderPattern'"
+	Write-Warning "No files of type mp4, mkv, avi, vob, ts, or iso found for '$mediaBase\${mediaTitle}\$subFolderPattern'"
 	return
 }
 $processingArguments= $videoFiles | Select-Object -Property `
@@ -368,13 +392,15 @@ $processingArguments= $videoFiles | Select-Object -Property `
 $processingArguments | ForEach-Object { 
 	$fn=$_.containerPath;
 	$cn=$_.containerName
-	$srt=$_.SRT;
+	$srt=$_.SRT
+	$noLangSRT=$_.SRT -replace "_${Language}",""
 	$guid=New-Guid
-	if ( $exists=Get-Item -ea SilentlyContinue "$srt" ){
+	if (( $exists=Get-Item -ea SilentlyContinue "$srt" ) -or ( $exists=Get-Item -ea SilentlyContinue "$noLangSRT" )){
 		Write-Host -ForegroundColor Yellow "Skipping: '$fn' since '$exists' exists"
 		return
 	}else{
 		Write-Host "Starting translation on '/app${fn}' to '$srt' with container '$cn'";
+		Update-WindowsTitle -Title $cn
 		Write-verbose "C:\programs\Docker\Docker\resources\bin\docker.exe run --rm --gpus device=$GPU --cpus $cpus --hostname whisper-$guid -t --mount source=nas-video,target=/app --mount source=whisper-models,target=/root/.cache/whisper  -eSMB=0 -eFILE=`"$fn`" -eMODEL=$model -eSOURCE_LANG=$Language -eTASK=$task -eOMP_NUM_THREADS=$cpus --name=`"$cn`" -eWHISPER_OPTS=`"$whisperOptions`" whisper-gpu:latest"
 		Start-Process -FilePath  C:\programs\Docker\Docker\resources\bin\docker.exe -ArgumentList "run --rm --gpus device=$GPU --cpus $cpus --hostname whisper-$guid -t --mount source=nas-video,target=/app --mount source=whisper-models,target=/root/.cache/whisper  -eSMB=0 -eFILE=`"$fn`" -eMODEL=$model -eSOURCE_LANG=$Language -eTASK=$task -eOMP_NUM_THREADS=$cpus --name=`"$cn`" -eWHISPER_OPTS=`"$whisperOptions`" whisper-gpu:latest" -NoNewWindow -Wait 
 	}
